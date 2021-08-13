@@ -1,0 +1,8 @@
+com\studentapp\entity\StudentEntity.class
+com\studentapp\dto\StudentDto.class
+com\studentapp\pdf\StudentPDF.class
+com\studentapp\repository\StudentRepository.class
+com\studentapp\controller\StudentController.class
+com\studentapp\StudentAppApplication.class
+com\studentapp\config\SpringFoxConfig.class
+com\studentapp\service\StudentService.class
