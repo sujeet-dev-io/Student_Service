@@ -5,12 +5,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.studentapp.dto.StudentDto;
-import com.studentapp.entity.StudentEntity;
+import com.studentapp.dto.Status;
+import com.studentapp.dto.StudentRequestDto;
 import com.studentapp.pdf.StudentPDF;
-import com.studentapp.service.StudentService;
+import com.studentapp.response.BaseResponse;
+import com.studentapp.response.StudentResponse;
+import com.studentapp.service.IStudentService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,46 +33,64 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags="student controller provider")
 @RestController
 public class StudentController {
+	
 	@Autowired
-	private StudentService studentService;
+	private IStudentService studentService;
 
-	@ApiOperation(value = "demo Api")
+	@ApiOperation(value = "Ping Api")
 	@GetMapping("/ping")
 	public String getMessage() {
-		return "hello web ...........";
+		return "Ping Successfully";
 	}
 
 	@ApiOperation(value = "API to add student details")
 	@PostMapping("/addStudentDetails")
-	public String addStudent(@RequestBody StudentDto dto) {
+	public ResponseEntity<BaseResponse<String, Integer>> addStudent(@RequestBody StudentRequestDto dto) {
+		BaseResponse<String, Integer> response = new BaseResponse<>();
+		response.setMessage("Student details added successfully");
+		response.setStatus(Status.SUCCESS);
 		studentService.addStudentDetails(dto);
-		return "Student details added successfully...";
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "API to get all student details")
 	@GetMapping("/getAllStudentDetails")
-	public List<StudentEntity> getAllStudent(){
-		return studentService.getAllStudent();
+	public ResponseEntity<BaseResponse<List<StudentResponse>, Integer>> getAllStudent(){
+		BaseResponse<List<StudentResponse>, Integer> response = new BaseResponse<>();
+		response.setMessage("Student details added successfully");
+		response.setStatus(Status.SUCCESS);
+		response.setData(studentService.getAllStudent());
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "API to get student details by Id")
 	@GetMapping("/getStudentDetails/{id}")
-	public Optional<StudentEntity> getStudent(@PathVariable int id) {
-		return studentService.getStudentById(id);
+	public ResponseEntity<BaseResponse<StudentResponse, Integer>>  getStudent(@PathVariable int id) {
+		BaseResponse<StudentResponse, Integer> response = new BaseResponse<>();
+		response.setMessage("Student details added successfully");
+		response.setStatus(Status.SUCCESS);
+		response.setData(studentService.getStudentById(id));
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "API to update student details")
 	@PutMapping("/updateStudentDetails/{id}")
-	public String updateDetails(@PathVariable int id, @RequestBody StudentDto dto) {
+	public ResponseEntity<BaseResponse<String, Integer>> updateDetails(@PathVariable int id, @RequestBody StudentRequestDto dto) {
+		BaseResponse<String, Integer> response = new BaseResponse<>();
 		studentService.updateDetails(id, dto);
-		return "Student Details updated successfully...";
+		response.setMessage("Student Details updated successfully");
+		response.setStatus(Status.SUCCESS);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "API to delete student details by Id")
 	@DeleteMapping("/deleteStudentDetails/{id}")
-	public String deleteDetails(@PathVariable int id) {
+	public  ResponseEntity<BaseResponse<String, Integer>> deleteDetails(@PathVariable int id) {
+		BaseResponse<String, Integer> response = new BaseResponse<>();
 		studentService.deleteDetails(id);
-		return "Student Details deleted succesfully...";
+		response.setMessage("Student Details deleted succesfully");
+		response.setStatus(Status.SUCCESS);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = "Api to get pdf of students details")
@@ -82,8 +103,8 @@ public class StudentController {
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=studentsDetails" + currentDateTime + ".pdf";
 		response.setHeader(headerKey, headerValue);
-		List<StudentEntity> studentlist = studentService.getAllStudent();
-		StudentPDF exporter = new StudentPDF(studentlist);
+		List<StudentResponse> studentList = studentService.getAllStudent();
+		StudentPDF exporter = new StudentPDF(studentList);
 		exporter.export(response);
 
 	}

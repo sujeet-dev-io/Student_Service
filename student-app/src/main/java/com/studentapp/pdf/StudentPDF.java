@@ -16,14 +16,14 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.studentapp.entity.StudentEntity;
+import com.studentapp.response.StudentResponse;
 
 public class StudentPDF {
 
-	 private List<StudentEntity> studentlist;
+	 private List<StudentResponse> studentList;
      
-	    public StudentPDF(List<StudentEntity> studentlist) {
-	        this.studentlist = studentlist;
+	    public StudentPDF(List<StudentResponse> studentList) {
+	        this.studentList = studentList;
 	    }
 	 
 	    private void writeTableHeader(PdfPTable table) {
@@ -53,7 +53,7 @@ public class StudentPDF {
 	    }
 	     
 	    private void writeTableData(PdfPTable table) {
-	        for (StudentEntity student : studentlist) {
+	        for (StudentResponse student : studentList) {
 	            table.addCell(String.valueOf(student.getStudentId()));
 	            table.addCell(student.getStudentName());
 	            table.addCell(student.getStudentAge());
