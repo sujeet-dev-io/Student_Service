@@ -10,9 +10,9 @@ import lombok.Data;
 @Data
 public class JwtUser implements UserDetails {
 
-	private String roleId;
+//	private String roleId;
 	
-	private String roleName;
+//	private String roleName;
 	
 	private String username;
 	

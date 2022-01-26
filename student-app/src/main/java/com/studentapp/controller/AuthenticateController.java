@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.studentapp.constant.Message;
 import com.studentapp.dto.AuthenticationRequest;
 import com.studentapp.dto.Status;
 import com.studentapp.jwt.JwtUser;
@@ -26,7 +27,7 @@ import com.studentapp.service.impl.UserServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(tags = "Authentication Controller Provider")
+@Api(tags = Message.AUTHENTICATE_CONTROLLER)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticateController {
@@ -37,13 +38,14 @@ public class AuthenticateController {
 	@Autowired
 	private TokenProvider jwtTokenUtil;
 	
-	@Resource(name = "userService")
+	@Resource(name = Message.USERSERVICE)
 	private UserServiceImpl userService;
 
 	@CrossOrigin("*")
-	@ApiOperation(value = "It is to generate new authorization token")
+	@ApiOperation(value = Message.GENERATE_NEW_TOKEN)
 	@PostMapping
-	public ResponseEntity<GenericResponse> createAuthToken(@RequestBody AuthenticationRequest authenticationRequest) {
+	public ResponseEntity<GenericResponse> createAuthToken(
+			@RequestBody AuthenticationRequest authenticationRequest) {
 		try {
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
@@ -55,15 +57,17 @@ public class AuthenticateController {
 			JwtUser jwtUser = userService.loadUserByUsername(authenticationRequest.getUsername());
 			final String token = jwtTokenUtil.generateToken(jwtUser);
 			GenericResponse response = new GenericResponse();
-			response.setMessage("New authorization token has been generated.");
+			response.setMessage(Message.TOKEN_GENERATED);
 			response.setStatus(Status.SUCCESS);
 			response.setToken(token);
 			return ResponseEntity.ok(response);
 
 		} catch (BadCredentialsException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or password is invalid");
+			throw new ResponseStatusException(
+					HttpStatus.BAD_REQUEST, Message.INVALID_USERNAME_PASSWORD);
 		} catch (DisabledException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user is blocked");
+			throw new ResponseStatusException(
+					HttpStatus.BAD_REQUEST, Message.USER_BLOCKED);
 		}
 
 	}

@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class TokenProvider implements Serializable {
+	
+	@Value("${jwt.secret}")
+	private String jwtSecretSigningKey;
+	
+	@Value("${jwt.expiration}")
+	private long jwtExpiration;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -36,7 +43,7 @@ public class TokenProvider implements Serializable {
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(SIGNING_KEY)
+                .setSigningKey(jwtSecretSigningKey)
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -53,9 +60,9 @@ public class TokenProvider implements Serializable {
                 .claim(ROLE, jwtUser.getAuthorities())
                 .claim(JWT_USER_KEY, jwtUser)
   //              .claim(ROLE_NAME, jwtUser.getRoleName())
-                .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
+                .signWith(SignatureAlgorithm.HS256, jwtSecretSigningKey)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS*1000))
+                .setExpiration(new Date(System.currentTimeMillis()+jwtExpiration))
                 .compact();
     }
 
@@ -67,18 +74,18 @@ public class TokenProvider implements Serializable {
     }
 
     public JwtUser getJwtUser(final String token) {
-        final JwtParser jwtParser = Jwts.parser().setSigningKey(SIGNING_KEY);
+        final JwtParser jwtParser = Jwts.parser().setSigningKey(jwtSecretSigningKey);
         final Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
         final Claims claims = claimsJws.getBody();
         
         System.out.println(claims.getSubject());
         System.out.println(claims.get(JWT_USER_KEY));
         System.out.println(claims.get(ROLE));
- //       System.out.println(claims.get(ROLE_NAME));
+//       System.out.println(claims.get(ROLE_NAME));
         
         JwtUser jwtUser = new JwtUser();
         jwtUser.setUsername(claims.getSubject());
- //       jwtUser.setRoleId((String)claims.get(ROLE));
+//       jwtUser.setRoleId((String)claims.get(ROLE));
 //        jwtUser.setRoleName((String)claims.get(ROLE_NAME));
         return jwtUser;
     }
