@@ -11,5 +11,15 @@ public interface Message {
 	String STUDENT_CONTROLLER = "Student Controller Provider";
 	String PING = "Ping Successfully";
 	String ADD_STUDENT = "API to add student details";
+	String FIRST_NAME_NOT_VALID = "First name is not valid";
+	String LAST_NAME_NOT_VALID = "Last name is not valid";
+	String FIRSTNAME_CAN_NOT_BE_BLANK="First name can not be blank";
+	String LASTNAME_CAN_NOT_BE_BLANK="Last name can not be blank";
+	String EMAIL_ALREADY_EXISTS = "Email already exists";
+	String EMAIL_MUST_BE_PROVIDED = "Email must be provided";
+	String PASSWORD_IS_REQUARD="Password is required";
+	String PASSWORD_LENGTH_NOT_CORRECT="Password length must be equal/greater than 6-chars";
+	String SHOULD_BE_VALID_EMAIL="Should be a valid email";
+	String PHONE_NO_NOT_VALID = "Phone number is not valid, its length must be 10-digits without using country code i.e '+91'";
 
 }

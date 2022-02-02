@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.studentapp.dto.AddUserRequestDto;
+import com.studentapp.dto.AddUserRequest;
 import com.studentapp.dto.Status;
 import com.studentapp.response.BaseResponse;
 import com.studentapp.service.impl.UserServiceImpl;
@@ -26,7 +26,7 @@ public class UserController {
 	@CrossOrigin("*")
 	@ApiOperation(value = "It is to add new user")
 	@PostMapping("/addUser")
-	public ResponseEntity<BaseResponse<String, Long>> addUser(AddUserRequestDto dto) {
+	public ResponseEntity<BaseResponse<String, Long>> addUser(AddUserRequest dto) {
 		BaseResponse<String, Long> response = new BaseResponse<>();
 		userService.addUser(dto);
 		response.setMessage("User added successfully.");

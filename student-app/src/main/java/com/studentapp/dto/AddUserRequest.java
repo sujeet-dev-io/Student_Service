@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class AddUserRequestDto {
+public class AddUserRequest {
 	@NotBlank(message = "please enter username")
 	 private String username;
 	@NotBlank(message = "please enter password")

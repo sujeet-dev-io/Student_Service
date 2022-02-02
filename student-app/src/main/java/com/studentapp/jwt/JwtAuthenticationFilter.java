@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studentapp.dto.Status;
 import com.studentapp.response.GenericResponse;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -49,40 +52,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String username = null;
 
 		excludedUrls = Arrays.asList("springfox-swagger-ui", "swagger-resources", "swagger-ui.html",
-				"/v2/api-docs", "/api/auth", "/api/ping", "/api/addUser");
+				"/v2/api-docs", "/api/auth", "/api/ping", "/api/addUser", "/api/getAllStudentDetails");
 
-		if (excludedUrls.stream()
-				.noneMatch(url-> 
-				req.getRequestURL()
-				.toString()
-				.toLowerCase()
-				.contains(url.toLowerCase()))
+		if (excludedUrls.stream().noneMatch(url-> 
+				req.getRequestURL().toString().toLowerCase().contains(url.toLowerCase()))
 				&& !req.getMethod().equals("OPTIONS")) {
 			System.out.println("RequestURL : " + req.getRequestURL().toString().toLowerCase());
 			System.out.println("Method Type : " + req.getMethod().toString());
 			String authToken = req.getHeader(this.tokenHeader);
 
 			if(null == authToken) {
-				logger.error("Token can not be left blank.");
-				prepareErrorResponse(res, "Token can not be left blank.");
+				logger.error("Token can not be left blank");
+				prepareErrorResponse(res, "Token can not be left blank");
 				return;
 			}
-			if(authToken.startsWith("Bearer ")) {
-				authToken = authToken.substring(7);
-
-				if (jwtTokenUtil.isTokenExpired(authToken)) { 
-					logger.info("Token is expired.");
-					prepareErrorResponse(res, "Token is expired.");
+			
+			try {
+				if(!authToken.startsWith("Bearer ")) {
+					logger.info("Token must be starts with Bearer");
+					prepareErrorResponse(res, "Token must be starts with Bearer");
 					return;
+				} else {
+					authToken = authToken.substring(7);
+				    username = jwtTokenUtil.getUsernameFromToken(authToken);
+				    System.out.println("username : "+username);
 				}
-				username = jwtTokenUtil.getUsernameFromToken(authToken);
-			}
-			if(null == username) {
-				logger.info("Token is not valid.");
-				prepareErrorResponse(res, "Token is not valid.");
+			} catch (MalformedJwtException e) {
+				logger.info("The given token is malformed. Please try with a valid token");
+				prepareErrorResponse(res, "The given token is malformed. Please try with a valid token");
+				return;
+			} catch (SignatureException e) {
+				logger.info("Token is not valid");
+				prepareErrorResponse(res, "Token is not valid");
+				return;
+			} catch (ExpiredJwtException e) {
+				logger.info("Your token is expired. Please try with new token");
+				prepareErrorResponse(res, "Your token is expired. Please try with new token");
+				return;
+			} catch (IllegalArgumentException e) {
+				logger.info("Invalid request token found");
+				prepareErrorResponse(res, "Invalid request token found");
 				return;
 			}
-
+			
 			try {
 				if (username != null) {
 
@@ -103,6 +115,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						.setAuthentication(
 								usernamePasswordAuthenticationToken);
 					}
+				} else {
+					logger.info("Invalid user");
+					prepareErrorResponse(res, "Invalid user");
+					return;
 				}
 			} catch (Exception e) {
 				prepareErrorResponse(res, "Invalid user");
