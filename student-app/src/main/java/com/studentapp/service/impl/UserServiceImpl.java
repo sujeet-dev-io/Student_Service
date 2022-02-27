@@ -1,6 +1,11 @@
 package com.studentapp.service.impl;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.studentapp.constant.AdminStatus;
 import com.studentapp.constant.AdminType;
 import com.studentapp.dto.AddUserRequest;
+import com.studentapp.dto.EmailDto;
 //import com.pct.auth.dto.PermissionDto;
 //import com.pct.auth.entity.PermissionEntity;
 import com.studentapp.entity.UserEntity;
@@ -24,6 +30,8 @@ import com.studentapp.jwt.JwtUser;
 import com.studentapp.repository.UserRepository;
 import com.studentapp.validation.ValidateRequest;
 
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
 import lombok.AllArgsConstructor;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -33,6 +41,9 @@ public class UserServiceImpl implements UserDetailsService {
 	
 	@Value("${spring.mail.from}")
 	private String fromEmail;
+	
+    @Value("${spring.mail.default-to}")
+    private String defaultToEmailAddress;
 
 	@Autowired
 	private UserRepository userDao;
@@ -41,7 +52,10 @@ public class UserServiceImpl implements UserDetailsService {
 	private ValidateRequest validate;
 	
 	@Autowired
-	private JavaMailSender javaMailSender;
+    private Configuration configuration;
+	
+	@Autowired
+	private EmailService emailService;
 	
 	public Boolean addUser(AddUserRequest request) {
 //		UserEntity entity = modelMapper.map(dto, UserEntity.class);
@@ -62,27 +76,48 @@ public class UserServiceImpl implements UserDetailsService {
 		user.setUpdatedAt(LocalDateTime.now());
 		user.setUpdatedBy("System");
 		userDao.save(user);
-		sendEmail(user.getUsername());
+		sendEmail(user);
 		return true;
 	}
 	
-	void sendEmail(String username) {
-		MimeMessagePreparator messagePreparator = mimeMessage -> {
-			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-			messageHelper.setFrom(fromEmail);
-			messageHelper.setTo("kumar8851pravee@gmail.com");
-			messageHelper.setSubject("Welcome "+username);
-			String content ="Contratulations !! "
-					+ "You have successfully register in Student App";
-			messageHelper.setText(content, true);
-		};
+	private void sendEmail(UserEntity user) {
+		Map<String, Object> emailAttributes = new HashMap<>();
+		String userName = user.getUsername();
+		String userId = String.valueOf(user.getAdminId());
+		String email = user.getEmailId();
+		emailAttributes.put("userName", Objects.nonNull(userName) ? userName : "User");
+        emailAttributes.put("userId", Objects.nonNull(userId) ? userId : "");
+        emailAttributes.put("email", Objects.nonNull(email) ? email : "");
+        System.out.println("After type cast, claim:: {}"+ emailAttributes);
+        String subject = "User Registered on Student App";
+        EmailDto emailDto = null;
 		try {
-			javaMailSender.send(messagePreparator);
-			System.out.println("User Register Welcome Message Sent Successfully");
-		} catch (MailException e) {
+			emailDto = emailBuilder(subject, email, "User.ftl", emailAttributes);
+		} catch (IOException | TemplateException e) {
 			e.printStackTrace();
 		}
+        emailService.sendEmail(emailDto.getTo(), emailDto.getFrom(), emailDto.getSubject(),
+        		emailDto.getBody(), emailDto.getCc());
 	}
+	
+	private String getEmailBody(String template, Map<String, Object> model)
+			throws TemplateException, IOException {
+        StringWriter stringWriter = new StringWriter();
+        configuration.getTemplate(template).process(model, stringWriter);
+        return stringWriter.getBuffer().toString();
+    }
+
+    private EmailDto emailBuilder(
+    		String subject,
+    		String toEmailAddress,
+    		String template,
+    		Map<String, Object> model) throws IOException, TemplateException {
+        return EmailDto.builder()
+                .subject(subject)
+                .body(getEmailBody(template, model))
+                .to(Objects.nonNull(toEmailAddress) ? toEmailAddress : defaultToEmailAddress)
+                .from(fromEmail).build();
+    }
 	
 	public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
 		UserEntity user = userDao.findByUsername(username);
