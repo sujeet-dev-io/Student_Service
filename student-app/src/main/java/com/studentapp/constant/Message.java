@@ -11,6 +11,11 @@ public interface Message {
 	String STUDENT_CONTROLLER = "Student Controller Provider";
 	String PING = "Ping Successfully";
 	String ADD_STUDENT = "API to add student details";
+	String GET_ALL_STUDENT = "API to get all student details";
+	String GET_STUDENT = "API to get student details by Id";
+	String UPDATE_STUDENT = "API to update student details";
+	String DELETE_STUDENT = "API to delete student details by Id";
+	String GET_ALL_STUDENT_PDF = "Api to get pdf of students details";
 	String FIRST_NAME_NOT_VALID = "First name is not valid";
 	String LAST_NAME_NOT_VALID = "Last name is not valid";
 	String FIRSTNAME_CAN_NOT_BE_BLANK="First name can not be blank";

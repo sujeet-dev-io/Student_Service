@@ -47,11 +47,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/auth",
                 		"/api/ping",
                 		"/api/addUser",
+                		"/api/addFaculty",
                 		"/v2/api-docs",
         				"/configuration/ui",
         				"/swagger-resources/**",
         				"/configuration/security",
-        				"/api/getAllStudentDetails",
         				"/swagger-ui.html",
         				"/webjars/**").permitAll()
                 .anyRequest().authenticated().and().sessionManagement()

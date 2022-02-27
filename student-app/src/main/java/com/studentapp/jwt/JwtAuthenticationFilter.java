@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String username = null;
 
 		excludedUrls = Arrays.asList("springfox-swagger-ui", "swagger-resources", "swagger-ui.html",
-				"/v2/api-docs", "/api/auth", "/api/ping", "/api/addUser", "/api/getAllStudentDetails");
+				"/v2/api-docs", "/api/auth", "/api/ping", "/api/addUser", "/api/addFaculty");
 
 		if (excludedUrls.stream().noneMatch(url-> 
 				req.getRequestURL().toString().toLowerCase().contains(url.toLowerCase()))
@@ -110,10 +110,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 								new WebAuthenticationDetailsSource()
 								.buildDetails(req));
 						logger.info("authenticated user: " + username + ", setting security context");
-						SecurityContextHolder.
-						getContext()
-						.setAuthentication(
-								usernamePasswordAuthenticationToken);
+						SecurityContextHolder.getContext().
+						setAuthentication(usernamePasswordAuthenticationToken);
 					}
 				} else {
 					logger.info("Invalid user");

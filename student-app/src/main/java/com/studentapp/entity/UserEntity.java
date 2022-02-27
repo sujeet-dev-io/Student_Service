@@ -25,25 +25,32 @@ public class UserEntity extends BaseEntity {
   
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+	 @Column(name="admin_id", unique=true, nullable=false, length=10)
+    private long adminId;
 	
-    @Column
+	@Column(name = "type_id")
+    private Integer typeId;
+	
+	@Column(name = "status_id")
+    private Integer statusId;
+	
+    @Column(name = "username")
     private String username;
     
-    @Column
+    @Column(name = "password")
     @JsonIgnore
     private String password;
     
-    @Column
+    @Column(name = "first_name")
     private String firstName;
     
-    @Column
+    @Column(name = "last_name")
     private String lastName;
     
-    @Column
+    @Column(name = "mobile_number")
     private String mobileNumber;
     
-    @Column
+    @Column(name = "email_id")
     private String emailId;
     
 	@Column(name="deleted")

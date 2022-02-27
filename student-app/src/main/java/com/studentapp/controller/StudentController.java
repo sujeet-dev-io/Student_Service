@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.studentapp.constant.Message;
 import com.studentapp.dto.Status;
-import com.studentapp.dto.StudentRequestDto;
+import com.studentapp.dto.AddStudentRequest;
 import com.studentapp.pdf.StudentPDF;
 import com.studentapp.response.BaseResponse;
 import com.studentapp.response.StudentResponse;
@@ -33,7 +34,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Api(tags= Message.STUDENT_CONTROLLER)
-@RequestMapping("/api")
+@RequestMapping("/api/student")
 @RestController
 public class StudentController {
 	
@@ -47,62 +48,62 @@ public class StudentController {
 	}
 
 	@ApiOperation(value = Message.ADD_STUDENT)
-	@PostMapping("/addStudentDetails")
-	public ResponseEntity<BaseResponse<String, Integer>> addStudent(
-			@RequestBody StudentRequestDto dto) {
-		BaseResponse<String, Integer> response = new BaseResponse<>();
+	@PostMapping("/add")
+	public ResponseEntity<BaseResponse<Boolean, Integer>> addStudent(
+			@Valid @RequestBody AddStudentRequest request) {
+		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
+		response.setData(studentService.addStudentDetails(request));
 		response.setMessage("Student details added successfully");
 		response.setStatus(Status.SUCCESS);
-		studentService.addStudentDetails(dto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "API to get all student details")
-	@GetMapping("/getAllStudentDetails")
+	@ApiOperation(value = Message.GET_ALL_STUDENT)
+	@GetMapping("/getAll")
 	public ResponseEntity<BaseResponse<List<StudentResponse>, Integer>> getAllStudent(){
 		BaseResponse<List<StudentResponse>, Integer> response = new BaseResponse<>();
+		response.setData(studentService.getAllStudent());
 		response.setMessage("Student details list fetched successfully");
 		response.setStatus(Status.SUCCESS);
-		response.setData(studentService.getAllStudent());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "API to get student details by Id")
-	@GetMapping("/getStudentDetails/{id}")
+	@ApiOperation(value = Message.GET_STUDENT)
+	@GetMapping("/get/{id}")
 	public ResponseEntity<BaseResponse<StudentResponse, Integer>>  getStudent(
 			@PathVariable int id) {
 		BaseResponse<StudentResponse, Integer> response = new BaseResponse<>();
+		response.setData(studentService.getStudentById(id));
 		response.setMessage("Student details fetched successfully");
 		response.setStatus(Status.SUCCESS);
-		response.setData(studentService.getStudentById(id));
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "API to update student details")
-	@PutMapping("/updateStudentDetails/{id}")
-	public ResponseEntity<BaseResponse<String, Integer>> updateDetails(
+	@ApiOperation(value = Message.UPDATE_STUDENT)
+	@PutMapping("/update/{id}")
+	public ResponseEntity<BaseResponse<Boolean, Integer>> updateDetails(
 			@PathVariable int id,
-			@RequestBody StudentRequestDto dto) {
-		BaseResponse<String, Integer> response = new BaseResponse<>();
-		studentService.updateDetails(id, dto);
+			@Valid @RequestBody AddStudentRequest request) {
+		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
+		response.setData(studentService.updateDetails(id, request));
 		response.setMessage("Student Details updated successfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "API to delete student details by Id")
-	@DeleteMapping("/deleteStudentDetails/{id}")
-	public ResponseEntity<BaseResponse<String, Integer>> deleteDetails(
+	@ApiOperation(value = Message.DELETE_STUDENT)
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<BaseResponse<Boolean, Integer>> deleteDetails(
 			@PathVariable int id) {
-		BaseResponse<String, Integer> response = new BaseResponse<>();
-		studentService.deleteDetails(id);
+		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
+		response.setData(studentService.deleteDetails(id));
 		response.setMessage("Student Details deleted succesfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "Api to get pdf of students details")
-	@GetMapping("/student/create/pdf")
+	@ApiOperation(value = Message.GET_ALL_STUDENT_PDF)
+	@GetMapping("/getAll/pdf")
 	public void exportToPDF(
 			HttpServletResponse response
 			) throws DocumentException,

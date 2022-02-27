@@ -1,5 +1,6 @@
 package com.studentapp.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.studentapp.dao.StudentDao;
-import com.studentapp.dto.StudentRequestDto;
+import com.studentapp.dto.AddStudentRequest;
 import com.studentapp.entity.StudentEntity;
 import com.studentapp.response.StudentResponse;
 import com.studentapp.service.IStudentService;
@@ -26,9 +27,14 @@ public class StudentService implements IStudentService {
 	@Autowired
 	private ModelMapper mapper;
 
+	public StudentService() {
+	}
+
 	@Override
-	public Boolean addStudentDetails(StudentRequestDto dto) {
-		StudentEntity entity = mapper.map(dto, StudentEntity.class);
+	public Boolean addStudentDetails(AddStudentRequest request) {
+		StudentEntity entity = mapper.map(request, StudentEntity.class);
+		entity.setCreatedAt(LocalDateTime.now());
+		entity.setCreatedBy(request.getEmail());
 		studentDao.save(entity);
 		return true;
 	}
@@ -38,7 +44,7 @@ public class StudentService implements IStudentService {
 		List<StudentResponse> responseList = new ArrayList<>();
 		List<StudentEntity> listOfStudent = studentDao.findAll();
 		if(!CollectionUtils.isEmpty(listOfStudent)) {
-			listOfStudent.stream().forEach(std -> {
+			listOfStudent.forEach(std -> {
 				StudentResponse response = mapper.map(std, StudentResponse.class);
 				responseList.add(response);
 			});
@@ -61,7 +67,7 @@ public class StudentService implements IStudentService {
 	}
 
 	@Override
-	public Boolean updateDetails(int id, StudentRequestDto dto) {
+	public Boolean updateDetails(int id, AddStudentRequest dto) {
 		Optional<StudentEntity> entityOptional = studentDao.findById(id);
 		if(!entityOptional.isPresent()) 
 			throw new ResponseStatusException(
@@ -79,9 +85,11 @@ public class StudentService implements IStudentService {
 		if(!entityOptional.isPresent()) 
 			throw new ResponseStatusException(
 					HttpStatus.BAD_REQUEST, "Record doesn't exist to delete");
+		
+		StudentEntity studentEntity = entityOptional.get();
+		studentEntity.setDeleted(Boolean.TRUE);
 
-		studentDao.delete(entityOptional.get());
-
+		studentDao.save(studentEntity);
 		return true;
 	}
 
