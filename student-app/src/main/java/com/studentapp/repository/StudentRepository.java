@@ -6,4 +6,5 @@ import com.studentapp.entity.StudentEntity;
 
 public interface StudentRepository extends JpaRepository<StudentEntity, Integer> {
 
+	StudentEntity save(StudentEntity entity);
 }

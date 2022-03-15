@@ -2,17 +2,14 @@ package com.studentapp.service.impl;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,7 +29,6 @@ import com.studentapp.validation.ValidateRequest;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import lombok.AllArgsConstructor;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 //@AllArgsConstructor
@@ -71,9 +67,9 @@ public class UserServiceImpl implements UserDetailsService {
 		user.setMobileNumber(request.getMobileNumber());
 		user.setTypeId(AdminType.SUPER_ADMIN.getLookupId());
 		user.setStatusId(AdminStatus.Active.getLookupId());
-		user.setCreatedAt(LocalDateTime.now());
+		user.setCreatedAt(getCurrentTimestamp());
 		user.setCreatedBy("System");
-		user.setUpdatedAt(LocalDateTime.now());
+		user.setUpdatedAt(getCurrentTimestamp());
 		user.setUpdatedBy("System");
 		userDao.save(user);
 		sendEmail(user);
@@ -143,4 +139,8 @@ public class UserServiceImpl implements UserDetailsService {
 //		}
 //		return permissionDtoList;
 //	}
+	
+	public static Timestamp getCurrentTimestamp() {
+        return new Timestamp(new Date().getTime());
+    }
 }

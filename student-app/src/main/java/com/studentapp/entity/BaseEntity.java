@@ -1,6 +1,6 @@
 package com.studentapp.entity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -25,7 +25,7 @@ public class BaseEntity {
 	@CreationTimestamp
 	@Column(name="created_at")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime createdAt;
+	private Timestamp createdAt;
 	
 	@JsonIgnore
 	@CreatedBy
@@ -35,7 +35,7 @@ public class BaseEntity {
 	@UpdateTimestamp
 	@Column(name="updated_at")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime updatedAt;
+	private Timestamp updatedAt;
 	
 	@JsonIgnore
 	@LastModifiedBy

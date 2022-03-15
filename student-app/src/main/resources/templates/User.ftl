@@ -237,7 +237,7 @@
         <tr class="Main-text">
             <td width="56px" />
             <td colspan=3 width="488">
-                We're here to inform you that you are successfully registered in student App.
+                We're here to inform you that you are successfully registered on student App as a admin.
             </td>
             <td width="56px" />
         </tr>

@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String username = null;
 
 		excludedUrls = Arrays.asList("springfox-swagger-ui", "swagger-resources", "swagger-ui.html",
-				"/v2/api-docs", "/api/auth", "/api/ping", "/api/addUser", "/api/addFaculty");
+				"/v2/api-docs", "/api/auth", "/api/ping", "/api/addUser", "/api/student/add");
 
 		if (excludedUrls.stream().noneMatch(url-> 
 				req.getRequestURL().toString().toLowerCase().contains(url.toLowerCase()))

@@ -1,7 +1,8 @@
 package com.studentapp.service.impl;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.studentapp.dao.StudentDao;
 import com.studentapp.dto.AddStudentRequest;
+import com.studentapp.entity.Sequence;
 import com.studentapp.entity.StudentEntity;
+import com.studentapp.repository.SequenceRepository;
 import com.studentapp.response.StudentResponse;
 import com.studentapp.service.IStudentService;
 
@@ -23,6 +26,9 @@ public class StudentService implements IStudentService {
 
 	@Autowired
 	private StudentDao studentDao;
+	
+	@Autowired
+	private SequenceRepository sequenceRepository;
 
 	@Autowired
 	private ModelMapper mapper;
@@ -33,9 +39,11 @@ public class StudentService implements IStudentService {
 	@Override
 	public Boolean addStudentDetails(AddStudentRequest request) {
 		StudentEntity entity = mapper.map(request, StudentEntity.class);
-		entity.setCreatedAt(LocalDateTime.now());
+		entity.setCreatedAt(getCurrentTimestamp());
 		entity.setCreatedBy(request.getEmail());
-		studentDao.save(entity);
+		StudentEntity savedEntity = studentDao.save(entity);
+		savedEntity.setStudentNo(getStudentNumber(savedEntity.getStudentId()));
+		studentDao.save(savedEntity);
 		return true;
 	}
 
@@ -92,6 +100,33 @@ public class StudentService implements IStudentService {
 		studentDao.save(studentEntity);
 		return true;
 	}
+	
+	private String getStudentNumber(Integer studentId) {
+		String sequence = "1000";
+		List<Sequence> sequenceList = sequenceRepository.findAllByOrderByCreatedAtDesc();
+		
+		System.out.println("sequenceList : "+sequenceList.toString());
+		
+		if(!sequenceList.isEmpty() && sequenceList.size() > 0) {
+			Sequence sequenceEntity = sequenceList.get(0);
+			System.out.println("sequenceEntity : "+sequenceEntity.toString());
+			sequence = sequenceEntity.getStudentSequenceNo();
+			if(sequence.isEmpty() || sequence == null) {
+				sequence = "1000";
+			}
+		}
+		Integer newSequence = Integer.parseInt(sequence) + 1;
+		Sequence Seq = new Sequence();
+		Seq.setStudentId(studentId);
+		Seq.setStudentSequenceNo(newSequence.toString());
+		sequenceRepository.save(Seq);
+		String studentNo = "91" + newSequence + "S"; 
+		return studentNo;
+	}
+	
+	public static Timestamp getCurrentTimestamp() {
+        return new Timestamp(new Date().getTime());
+    }
 
 } 
 

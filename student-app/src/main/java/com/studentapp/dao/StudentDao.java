@@ -7,7 +7,7 @@ import com.studentapp.entity.StudentEntity;
 
 public interface StudentDao {
 	
-	void save(StudentEntity entity);
+	StudentEntity save(StudentEntity entity);
 	
 	void delete(StudentEntity entity);
 	
