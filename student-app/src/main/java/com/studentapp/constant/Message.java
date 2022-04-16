@@ -26,5 +26,7 @@ public interface Message {
 	String PASSWORD_LENGTH_NOT_CORRECT="Password length must be equal/greater than 6-chars";
 	String SHOULD_BE_VALID_EMAIL="Should be a valid email";
 	String PHONE_NO_NOT_VALID = "Phone number is not valid, its length must be 10-digits without using country code i.e '+91'";
+	
+	String FILE_NOT_FOUND = "No such file found";
 
 }

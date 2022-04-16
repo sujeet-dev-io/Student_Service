@@ -105,15 +105,13 @@ public class StudentService implements IStudentService {
 		String sequence = "1000";
 		List<Sequence> sequenceList = sequenceRepository.findAllByOrderByCreatedAtDesc();
 		
-		System.out.println("sequenceList : "+sequenceList.toString());
+		System.out.println("sequenceList : " + sequenceList.toString());
 		
 		if(!sequenceList.isEmpty() && sequenceList.size() > 0) {
 			Sequence sequenceEntity = sequenceList.get(0);
-			System.out.println("sequenceEntity : "+sequenceEntity.toString());
+			System.out.println("sequenceEntity : " + sequenceEntity.toString());
 			sequence = sequenceEntity.getStudentSequenceNo();
-			if(sequence.isEmpty() || sequence == null) {
-				sequence = "1000";
-			}
+			if(sequence.isEmpty() || sequence == null) sequence = "1000";
 		}
 		Integer newSequence = Integer.parseInt(sequence) + 1;
 		Sequence Seq = new Sequence();

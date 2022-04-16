@@ -48,9 +48,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 		"/api/ping",
                 		"/api/addUser",
                 		"/api/student/add",
+                		"/api/file/upload",
                 		"/v2/api-docs",
         				"/configuration/ui",
         				"/swagger-resources/**",
+        				"/image/**",
         				"/configuration/security",
         				"/swagger-ui.html",
         				"/webjars/**").permitAll()
