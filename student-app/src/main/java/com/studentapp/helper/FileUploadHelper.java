@@ -1,5 +1,14 @@
 package com.studentapp.helper;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -7,15 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.studentapp.constant.Message;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import com.studentapp.dto.FileDeleteDto;
 
 @Component
 public class FileUploadHelper {
@@ -50,20 +51,24 @@ public class FileUploadHelper {
         return isUploaded;
     }
     
-    public Boolean deleteFile(String fileName) throws IOException {
-    	
+    public Boolean deleteFile(FileDeleteDto filesDto) throws IOException {
+
     	Boolean isUploaded = false; 
-    	Path path = java.nio.file.Paths.get(UPLOAD_DIR + File.separator + fileName);
-    	
-    	try {
-    		Files.delete(path);
-    		isUploaded = true;
-    	} catch(NoSuchFileException ex) {
-    		logger.info(Message.FILE_NOT_FOUND);
-    		return false;
-    	}
-    	catch(Exception e) {
-    		e.printStackTrace();
+    	List<String> listOfFilesNamesToDelete = filesDto.getListOfFileNames();
+
+    	for(String fileName : listOfFilesNamesToDelete) {
+    		
+    		Path path = java.nio.file.Paths.get(UPLOAD_DIR + File.separator + fileName);
+    		try {
+    			Files.deleteIfExists(path);
+    			isUploaded = true;
+    		} catch(NoSuchFileException ex) {
+    			logger.info(Message.FILE_NOT_FOUND);
+    			return false;
+    		}
+    		catch(Exception e) {
+    			e.printStackTrace();
+    		}
     	}
     	return isUploaded;
     }

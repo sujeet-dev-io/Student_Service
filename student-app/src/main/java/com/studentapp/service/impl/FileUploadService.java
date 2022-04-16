@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.studentapp.dto.FileDeleteDto;
 import com.studentapp.helper.FileUploadHelper;
 import com.studentapp.service.IFileUploadService;
 
@@ -21,7 +22,9 @@ public class FileUploadService implements IFileUploadService {
 		if(file.isEmpty()) 
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File can't ne blank");
 
-		if(!file.getContentType().equals("image/jpeg"))
+		System.out.println("File Format -> " + file.getContentType());
+		if(!file.getContentType().equals("image/jpeg") && 
+				!file.getContentType().equals("image/png"))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Format not supported, please upload jpg file");
 
@@ -34,12 +37,12 @@ public class FileUploadService implements IFileUploadService {
 	}
 
 	@Override
-	public Boolean deleteFile(String fileName) {
+	public Boolean deleteFile(FileDeleteDto filesDto) {
 		
 		Boolean isDeleted = false;
 
 		try {
-			isDeleted = fileUploadHelper.deleteFile(fileName);
+			isDeleted = fileUploadHelper.deleteFile(filesDto);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
