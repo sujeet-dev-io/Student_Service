@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.studentapp.constant.Message;
-import com.studentapp.dto.Status;
+import com.studentapp.enums.Status;
 import com.studentapp.dto.AddStudentRequest;
 import com.studentapp.pdf.StudentPDF;
 import com.studentapp.response.BaseResponse;
@@ -70,8 +70,8 @@ public class StudentController {
 
 	@ApiOperation(value = Message.GET_STUDENT)
 	@GetMapping("/get/{id}")
-	public ResponseEntity<BaseResponse<StudentResponse, Integer>>  getStudent(
-			@PathVariable int id) {
+	public ResponseEntity<BaseResponse<StudentResponse, Integer>> getStudent(
+			@PathVariable Integer id) {
 		BaseResponse<StudentResponse, Integer> response = new BaseResponse<>();
 		response.setData(studentService.getStudentById(id));
 		response.setMessage("Student details fetched successfully");
@@ -82,7 +82,7 @@ public class StudentController {
 	@ApiOperation(value = Message.UPDATE_STUDENT)
 	@PutMapping("/update/{id}")
 	public ResponseEntity<BaseResponse<Boolean, Integer>> updateDetails(
-			@PathVariable int id,
+			@PathVariable Integer id,
 			@Valid @RequestBody AddStudentRequest request) {
 		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
 		response.setData(studentService.updateDetails(id, request));
@@ -94,10 +94,10 @@ public class StudentController {
 	@ApiOperation(value = Message.DELETE_STUDENT)
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<BaseResponse<Boolean, Integer>> deleteDetails(
-			@PathVariable int id) {
+			@PathVariable Integer id) {
 		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
 		response.setData(studentService.deleteDetails(id));
-		response.setMessage("Student Details deleted succesfully");
+		response.setMessage("Student Details deleted successfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

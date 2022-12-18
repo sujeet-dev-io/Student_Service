@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.studentapp.constant.Message;
 import com.studentapp.dto.AuthenticationRequest;
-import com.studentapp.dto.Status;
+import com.studentapp.enums.Status;
 import com.studentapp.jwt.JwtUser;
 import com.studentapp.jwt.TokenProvider;
 import com.studentapp.response.GenericResponse;

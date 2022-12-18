@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.studentapp.dto.FileDeleteDto;
-import com.studentapp.dto.Status;
+import com.studentapp.enums.Status;
 import com.studentapp.response.BaseResponse;
 import com.studentapp.service.IFileUploadService;
 

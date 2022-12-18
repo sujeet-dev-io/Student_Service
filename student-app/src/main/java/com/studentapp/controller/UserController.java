@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.studentapp.dto.AddUserRequest;
-import com.studentapp.dto.Status;
+import com.studentapp.enums.Status;
 import com.studentapp.response.BaseResponse;
 import com.studentapp.service.impl.UserServiceImpl;
 

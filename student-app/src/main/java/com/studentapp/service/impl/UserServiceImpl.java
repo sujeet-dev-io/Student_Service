@@ -16,8 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import com.studentapp.constant.AdminStatus;
-import com.studentapp.constant.AdminType;
+import com.studentapp.enums.AdminStatus;
+import com.studentapp.enums.AdminType;
 import com.studentapp.dto.AddUserRequest;
 import com.studentapp.dto.EmailDto;
 //import com.pct.auth.dto.PermissionDto;

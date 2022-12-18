@@ -11,10 +11,10 @@ public interface IStudentService {
 
 	List<StudentResponse>  getAllStudent();
 
-	StudentResponse getStudentById(int id);
+	StudentResponse getStudentById(Integer id);
 
-	Boolean updateDetails(int id, AddStudentRequest dto);
+	Boolean updateDetails(Integer id, AddStudentRequest dto);
 
-	Boolean deleteDetails(int id);
+	Boolean deleteDetails(Integer id);
 
 }

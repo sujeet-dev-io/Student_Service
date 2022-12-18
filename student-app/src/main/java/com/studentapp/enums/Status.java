@@ -1,4 +1,4 @@
-package com.studentapp.dto;
+package com.studentapp.enums;
 
 public enum Status {
 	SUCCESS, FAILURE

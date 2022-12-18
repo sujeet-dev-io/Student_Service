@@ -48,6 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 		"/api/ping",
                 		"/api/addUser",
                 		"/api/student/add",
+                        "/api/document/upload",
                 		"/api/file/upload",
                 		"/v2/api-docs",
         				"/configuration/ui",

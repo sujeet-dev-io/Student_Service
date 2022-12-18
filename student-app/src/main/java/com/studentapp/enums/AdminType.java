@@ -1,4 +1,4 @@
-package com.studentapp.constant;
+package com.studentapp.enums;
 
 public enum AdminType {
 
@@ -8,7 +8,7 @@ public enum AdminType {
 
 	private Integer lookupId;
 
-	private AdminType(Integer lookupId) {
+	AdminType(Integer lookupId) {
 		this.lookupId = lookupId;
 	}
 

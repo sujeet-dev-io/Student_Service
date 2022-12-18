@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.studentapp.dto.Status;
+import com.studentapp.enums.Status;
 import com.studentapp.response.GenericResponse;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		excludedUrls = Arrays.asList("springfox-swagger-ui", "swagger-resources", "swagger-ui.html",
 				"/v2/api-docs", "/api/auth", "/api/ping",
-				"/api/addUser", "/api/student/add", "/api/file/upload", "/image/**");
+				"/api/addUser", "/api/student/add", "/api/file/upload", "/api/document/upload", "/image/**");
 
 		if (excludedUrls.stream().noneMatch(url-> 
 				req.getRequestURL().toString().toLowerCase().contains(url.toLowerCase()))

@@ -2,7 +2,7 @@ package com.studentapp.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.studentapp.dto.Status;
+import com.studentapp.enums.Status;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.studentapp.constant;
+package com.studentapp.enums;
 
 public enum AdminStatus {
 	New(201),
