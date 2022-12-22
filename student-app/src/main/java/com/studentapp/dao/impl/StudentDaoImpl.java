@@ -32,6 +32,11 @@ public class StudentDaoImpl implements StudentDao {
 	}
 
 	@Override
+	public Optional<StudentEntity> findByMobileNumber(String mobNo) {
+		return studentRepository.findByMobileNumber(mobNo);
+	}
+
+	@Override
 	public List<StudentEntity> findAll() {
 		return studentRepository.findAll();
 	}

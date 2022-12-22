@@ -12,7 +12,9 @@ public interface StudentDao {
 	void delete(StudentEntity entity);
 	
 	Optional<StudentEntity> findById(int id);
-	
+
+	Optional<StudentEntity> findByMobileNumber(String mobNo);
+
 	List<StudentEntity> findAll();
 
 }

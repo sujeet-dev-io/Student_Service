@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.studentapp.exception.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,10 @@ public class StudentService implements IStudentService {
 
 	@Override
 	public Boolean addStudentDetails(AddStudentRequest request) {
+		Optional<StudentEntity> studentOpt = studentDao.findByMobileNumber(request.getMobileNumber());
+		if(studentOpt.isPresent())
+	     throw new BadRequestException("Student Already exist with this mobile no.");
+
 		StudentEntity entity = mapper.map(request, StudentEntity.class);
 		entity.setCreatedAt(getCurrentTimestamp());
 		entity.setCreatedBy(request.getEmail());
@@ -63,12 +68,11 @@ public class StudentService implements IStudentService {
 	public StudentResponse getStudentById(Integer id) {
 		StudentResponse response = null;
 		Optional<StudentEntity> entityOptional = studentDao.findById(id);
-		if(entityOptional.isPresent()) {
-			StudentEntity entity = entityOptional.get();
-			response = mapper.map(entity, StudentResponse.class);
+		if(!entityOptional.isPresent()) {
+			throw new BadRequestException("Student not found with the given Id");
 		}
-
-		return response;
+		StudentEntity entity = entityOptional.get();
+		return mapper.map(entity, StudentResponse.class);
 	}
 
 	@Override

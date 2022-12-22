@@ -1,6 +1,8 @@
 package com.studentapp.config;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -47,27 +49,36 @@ public class SpringFoxConfig {
 				.build();
 	}
 
-	@SuppressWarnings("deprecation")
-	@Bean
-	springfox.documentation.swagger.web.SecurityConfiguration security() {
-		return new springfox.documentation.swagger.web.SecurityConfiguration(null, null, null, null, "",
-				ApiKeyVehicle.HEADER, "AUTHORIZATION", null);
-	}
+//	@SuppressWarnings("deprecation")
+//	@Bean
+//	springfox.documentation.swagger.web.SecurityConfiguration security() {
+//		return new springfox.documentation.swagger.web.SecurityConfiguration(null, null, null, null, "",
+//				ApiKeyVehicle.HEADER, "AUTHORIZATION", null);
+//	}
 
-	private ApiKey apiKey() {
-		return new ApiKey("AUTHORIZATION", "Authorization", "header");
+	private List<ApiKey> apiKey() {
+		return Arrays.asList(
+				new ApiKey("AUTHORIZATION", "Authorization", "header"),
+				new ApiKey("Api Key", "x-api-key", "header")
+		);
 	}
 
 	private SecurityContext securityContext() {
-		return SecurityContext.builder().securityReferences(defaultAuth()).forPaths(PathSelectors.regex("/api.*"))
+		return SecurityContext
+				.builder()
+				.securityReferences(defaultAuth())
+				.forPaths(PathSelectors.regex("/api.*"))
 				.build();
 	}
 
-	List<SecurityReference> defaultAuth() {
+	private List<SecurityReference> defaultAuth() {
 		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
 		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
 		authorizationScopes[0] = authorizationScope;
-		return Lists.newArrayList(new SecurityReference("AUTHORIZATION", authorizationScopes));
+		return Lists.newArrayList(
+				new SecurityReference("AUTHORIZATION", authorizationScopes),
+				new SecurityReference("Api Key", authorizationScopes)
+		);
 	}
 
 }

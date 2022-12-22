@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         				"/image/**",
         				"/configuration/security",
         				"/swagger-ui.html",
+                        "/actuator/health",
         				"/webjars/**").permitAll()
                 .anyRequest().authenticated().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
