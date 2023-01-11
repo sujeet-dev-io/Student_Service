@@ -12,25 +12,25 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class EmailConfig {
 
 	// fetch the host, port, username, password and other details from application.properties
-	
+
 	@Value("${spring.mail.username}")
 	private String emailUserName;
-	
+
 	@Value("${spring.mail.password}")
 	private String emailPassword;
-	
+
 	@Value("${spring.mail.host}")
 	private String emailHost;
-	
+
 	@Value("${spring.mail.port}")
 	private int emailPort;
-	
+
 	@Value("${spring.mail.is_auth}")
 	private Boolean emailIsAuth;
-	
+
 	// creating the bean of JavaMailSender so that we can use this JavaMailSender methods
-	// by creating the object of JavaMailSender 
-	
+	// by creating the object of JavaMailSender
+
 	@Bean
 	public JavaMailSender getJavaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -40,17 +40,18 @@ public class EmailConfig {
 		mailSender.setPassword(emailPassword);
 
 		/*
-		 * If u got AuthenticationFailedException then 
+		 * If u got AuthenticationFailedException then
 		 * 1. Log on email
-		 * 2. account, in Account -> click Security -> 
+		 * 2. account, in Account -> click Security ->
 		 * 3. turn off 2-step verification and
 		 * 4. turn on "Less secure app access"
 		 */
-		
+
 		Properties props = mailSender.getJavaMailProperties();
 		props.put("mail.transport.protocol", "smtp");
 		props.put("mail.smtp.auth", emailIsAuth.toString());
 		props.put("mail.smtp.starttls.enable", "true");
+		//props.put("mail.smtp.ssl.enable", "true");
 		props.put("mail.debug", "false");
 
 		return mailSender;

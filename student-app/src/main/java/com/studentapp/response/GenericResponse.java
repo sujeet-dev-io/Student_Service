@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 public class GenericResponse {
 
 	/** The message. */
-	String message;
+	String successMsg;
 	
 	/** The status. */
 	Status status = Status.SUCCESS;
-	
 	String error;
+	String errorMsg;
 	
 	String token;
 	

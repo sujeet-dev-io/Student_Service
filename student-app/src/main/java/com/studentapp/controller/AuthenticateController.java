@@ -2,6 +2,8 @@ package com.studentapp.controller;
 
 import javax.annotation.Resource;
 
+import com.studentapp.exception.BadRequestException;
+import com.studentapp.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,7 @@ public class AuthenticateController {
 	private TokenProvider jwtTokenUtil;
 	
 	@Resource(name = Message.USERSERVICE)
-	private UserServiceImpl userService;
+	private IUserService userService;
 
 	@CrossOrigin("*")
 	@ApiOperation(value = Message.GENERATE_NEW_TOKEN)
@@ -57,17 +59,15 @@ public class AuthenticateController {
 			JwtUser jwtUser = userService.loadUserByUsername(authenticationRequest.getUsername());
 			final String token = jwtTokenUtil.generateToken(jwtUser);
 			GenericResponse response = new GenericResponse();
-			response.setMessage(Message.TOKEN_GENERATED);
+			response.setSuccessMsg(Message.TOKEN_GENERATED);
 			response.setStatus(Status.SUCCESS);
 			response.setToken(token);
 			return ResponseEntity.ok(response);
 
 		} catch (BadCredentialsException e) {
-			throw new ResponseStatusException(
-					HttpStatus.BAD_REQUEST, Message.INVALID_USERNAME_PASSWORD);
+			throw new BadRequestException(Message.INVALID_USERNAME_PASSWORD);
 		} catch (DisabledException e) {
-			throw new ResponseStatusException(
-					HttpStatus.BAD_REQUEST, Message.USER_BLOCKED);
+			throw new BadRequestException(Message.USER_BLOCKED);
 		}
 
 	}

@@ -39,12 +39,13 @@ public class FileUploadController {
 						.toUriString();
 				response.setData(data);
 				response.setStatus(Status.SUCCESS);
-				response.setMessage("File uploaded successfully");
+				response.setSuccessMsg("File uploaded successfully");
 				return ResponseEntity.ok(response);
 			}
 		}  catch (Exception e) {
 			response.setStatus(Status.FAILURE);
-			response.setError("File could not be uploaded. Something went wrong !!");
+			response.setError("IO Exception");
+			response.setErrorMsg("File could not be uploaded. Something went wrong !!");
 			e.printStackTrace();
 		}
 		return ResponseEntity.ok(response);
@@ -60,15 +61,16 @@ public class FileUploadController {
 			if(isFileUploaded) {
 				response.setData(Boolean.toString(isFileUploaded));
 				response.setStatus(Status.SUCCESS);
-				response.setMessage("File deleted successfully");
+				response.setSuccessMsg("File deleted successfully");
 				return ResponseEntity.ok(response);
 			}
 		} catch (Exception e) {
+			response.setData(Boolean.toString(isFileUploaded));
+			response.setStatus(Status.FAILURE);
+			response.setError("IO Exception");
+			response.setErrorMsg("File could not be deleted. Something went wrong !!");
 			e.printStackTrace();
 		}
-		response.setData(Boolean.toString(isFileUploaded));
-		response.setStatus(Status.FAILURE);
-		response.setError("File could not be deleted. Something went wrong !!");
 		return ResponseEntity.ok(response);
 	}
 }

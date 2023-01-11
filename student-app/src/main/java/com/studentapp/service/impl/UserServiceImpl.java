@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.studentapp.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,9 +32,8 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
-//@AllArgsConstructor
 @Service(value = "userService")
-public class UserServiceImpl implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService, IUserService {
 	
 	@Value("${spring.mail.from}")
 	private String fromEmail;
@@ -52,12 +52,11 @@ public class UserServiceImpl implements UserDetailsService {
 	
 	@Autowired
 	private EmailService emailService;
-	
+
+	@Override
 	public Boolean addUser(AddUserRequest request) {
 //		UserEntity entity = modelMapper.map(dto, UserEntity.class);
-		
 		validate.validateRequest(request);
-		
 		UserEntity user = new UserEntity();
 		user.setFirstName(request.getFirstName());
 		user.setLastName(request.getLastName());
@@ -84,8 +83,8 @@ public class UserServiceImpl implements UserDetailsService {
 		emailAttributes.put("userName", Objects.nonNull(userName) ? userName : "User");
         emailAttributes.put("userId", Objects.nonNull(userId) ? userId : "");
         emailAttributes.put("email", Objects.nonNull(email) ? email : "");
-        System.out.println("After type cast, claim:: {}"+ emailAttributes);
-        String subject = "User Registered on Student App";
+        System.out.println("After type cast, claim::"+ emailAttributes);
+        String subject = "User successfully registered on Student App";
         EmailDto emailDto = null;
 		try {
 			emailDto = emailBuilder(subject, email, "User.ftl", emailAttributes);
@@ -114,18 +113,22 @@ public class UserServiceImpl implements UserDetailsService {
                 .to(Objects.nonNull(toEmailAddress) ? toEmailAddress : defaultToEmailAddress)
                 .from(fromEmail).build();
     }
-	
+
+	@Override
 	public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
 		UserEntity user = userDao.findByUsername(username);
-		if(user == null){
+		if(user == null) {
 			throw new UsernameNotFoundException("Invalid username or password.");
 		}
 		
 		JwtUser jwtUser = new JwtUser();
 		jwtUser.setUsername(username);
 		jwtUser.setPassword(user.getPassword());
+		// setting adminType required for authorities.
+		jwtUser.setAdminType(AdminType.findAdminTypeByLookupId(user.getTypeId()));
 //		jwtUser.setRoleId(user.getRole().getRoleId().toString());
 //		jwtUser.setRoleName(user.getRole().getName());
+		System.out.println(jwtUser);
 		return jwtUser;
 		//return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new HashSet<>());
 	}

@@ -79,8 +79,7 @@ public class StudentService implements IStudentService {
 	public Boolean updateDetails(Integer id, AddStudentRequest dto) {
 		Optional<StudentEntity> entityOptional = studentDao.findById(id);
 		if(!entityOptional.isPresent()) 
-			throw new ResponseStatusException(
-					HttpStatus.BAD_REQUEST, "Record doesn't exist to update");
+			throw new BadRequestException("Record doesn't exist to update");
 		StudentEntity entity = entityOptional.get();
 		entity = mapper.map(dto, StudentEntity.class);
 		entity.setStudentId(id);
@@ -92,8 +91,7 @@ public class StudentService implements IStudentService {
 	public Boolean deleteDetails(Integer id) {
 		Optional<StudentEntity> entityOptional = studentDao.findById(id);
 		if(!entityOptional.isPresent()) 
-			throw new ResponseStatusException(
-					HttpStatus.BAD_REQUEST, "Record doesn't exist to delete");
+			throw new BadRequestException("Record doesn't exist to delete");
 		
 		StudentEntity studentEntity = entityOptional.get();
 		studentEntity.setDeleted(Boolean.TRUE);

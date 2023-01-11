@@ -1,14 +1,13 @@
 package com.studentapp.jwt;
 
-import static com.studentapp.jwt.JwtConstants.ACCESS_TOKEN_VALIDITY_SECONDS;
 import static com.studentapp.jwt.JwtConstants.JWT_USER_KEY;
 import static com.studentapp.jwt.JwtConstants.ROLE;
-import static com.studentapp.jwt.JwtConstants.SIGNING_KEY;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
 import java.util.function.Function;
 
+import com.studentapp.enums.AdminType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -77,14 +76,21 @@ public class TokenProvider implements Serializable {
         final JwtParser jwtParser = Jwts.parser().setSigningKey(jwtSecretSigningKey);
         final Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
         final Claims claims = claimsJws.getBody();
-        
-        System.out.println(claims.getSubject());
-        System.out.println(claims.get(JWT_USER_KEY));
-        System.out.println(claims.get(ROLE));
-//       System.out.println(claims.get(ROLE_NAME));
-        
+
+        System.out.println("SUBJECT->"+claims.getSubject());
+        System.out.println("JWT USER->"+claims.get(JWT_USER_KEY));
+        System.out.println("ROLE->"+claims.get(ROLE));
+
+        ArrayList<LinkedHashMap<String, String>> roleList = (ArrayList<LinkedHashMap<String, String>>) claims.get(ROLE);
+        LinkedHashMap<String, String> roleMap = roleList.get(0);
+        String roleValue = roleMap.get("authority");
+        Integer lookupId = AdminType.findLookupIdByName(roleValue);
+        AdminType adminType = AdminType.findAdminTypeByLookupId(lookupId);
+
         JwtUser jwtUser = new JwtUser();
+        jwtUser.setAdminType(adminType);
         jwtUser.setUsername(claims.getSubject());
+
 //       jwtUser.setRoleId((String)claims.get(ROLE));
 //        jwtUser.setRoleName((String)claims.get(ROLE_NAME));
         return jwtUser;

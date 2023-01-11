@@ -1,8 +1,12 @@
 package com.studentapp.jwt;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import com.studentapp.enums.AdminType;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.Data;
@@ -17,15 +21,17 @@ public class JwtUser implements UserDetails {
 	private String username;
 	
 	private String password;
-	
-	/**
-	 * 
-	 */
+
+	// To set the authorities
+	private AdminType adminType;
+
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return Arrays.stream(new String[]{adminType.name()})
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList());
 	}
 
 	@Override

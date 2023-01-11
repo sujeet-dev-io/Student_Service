@@ -12,26 +12,25 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 public class ErrorHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<BaseResponse<Integer, Integer>> handleAccessDeniedException(AccessDeniedException ex) {
+    public ResponseEntity<BaseResponse<Integer, Integer>> handleAccessDeniedException(
+            AccessDeniedException ex) {
         BaseResponse response = new BaseResponse();
         response.setStatus(Status.FAILURE);
-        response.setMessage(ex.defaultMessage);
+        response.setErrorMsg(ex.defaultMessage);
         response.setError("Access Denied");
-        response.setData(null);
 
         return new ResponseEntity(response, null, HttpStatus.FORBIDDEN);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<BaseResponse<Integer, Integer>> handleBadRequestException(BadRequestException ex) {
+    public ResponseEntity<BaseResponse<Integer, Integer>> handleBadRequestException(
+            BadRequestException ex) {
         BaseResponse response = new BaseResponse();
         response.setStatus(Status.FAILURE);
-        response.setMessage(ex.defaultMessage);
+        response.setErrorMsg(ex.defaultMessage);
         response.setError("Bad Request");
-        response.setData(null);
 
         return new ResponseEntity(response, null, HttpStatus.BAD_REQUEST);
     }
-
 
 }

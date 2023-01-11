@@ -13,6 +13,7 @@ import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,7 +54,7 @@ public class StudentController {
 			@Valid @RequestBody AddStudentRequest request) {
 		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
 		response.setData(studentService.addStudentDetails(request));
-		response.setMessage("Student details added successfully");
+		response.setSuccessMsg("Student details added successfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -63,7 +64,7 @@ public class StudentController {
 	public ResponseEntity<BaseResponse<List<StudentResponse>, Integer>> getAllStudent(){
 		BaseResponse<List<StudentResponse>, Integer> response = new BaseResponse<>();
 		response.setData(studentService.getAllStudent());
-		response.setMessage("Student details list fetched successfully");
+		response.setSuccessMsg("Student details list fetched successfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -74,7 +75,7 @@ public class StudentController {
 			@PathVariable Integer id) {
 		BaseResponse<StudentResponse, Integer> response = new BaseResponse<>();
 		response.setData(studentService.getStudentById(id));
-		response.setMessage("Student details fetched successfully");
+		response.setSuccessMsg("Student details fetched successfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -86,7 +87,7 @@ public class StudentController {
 			@Valid @RequestBody AddStudentRequest request) {
 		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
 		response.setData(studentService.updateDetails(id, request));
-		response.setMessage("Student Details updated successfully");
+		response.setSuccessMsg("Student Details updated successfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -97,7 +98,7 @@ public class StudentController {
 			@PathVariable Integer id) {
 		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
 		response.setData(studentService.deleteDetails(id));
-		response.setMessage("Student Details deleted successfully");
+		response.setSuccessMsg("Student Details deleted successfully");
 		response.setStatus(Status.SUCCESS);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

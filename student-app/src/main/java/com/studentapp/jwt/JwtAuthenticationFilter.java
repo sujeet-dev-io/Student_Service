@@ -10,11 +10,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.studentapp.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,6 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private List<String> excludedUrls;
 	
 	private String tokenHeader="Authorization";
+
+	@Autowired
+	private IUserService userService;
 
 	@Override
 	protected void doFilterInternal(
@@ -109,9 +114,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			
 			try {
 				if (username != null) {
-
-					JwtUser jwtUser = jwtTokenUtil.getJwtUser(authToken);
-
+					//JwtUser jwtUser = jwtTokenUtil.getJwtUser(authToken); // required if need roleId & roleName
+					JwtUser jwtUser = userService.loadUserByUsername(username);
 					if (!jwtTokenUtil.isTokenExpired(authToken)) {
 						UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = 
 								new UsernamePasswordAuthenticationToken(

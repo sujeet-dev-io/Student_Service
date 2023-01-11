@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.studentapp.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -39,44 +40,34 @@ public class ValidateRequest {
 		Optional<UserEntity> user = userDao.findByEmailId(request.getEmailId());
 
 		if (!matcherFirstName.matches()) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.FIRST_NAME_NOT_VALID);
+			throw new BadRequestException(Message.FIRST_NAME_NOT_VALID);
 
 		if (!matcherLastName.matches()) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.LAST_NAME_NOT_VALID);
+			throw new BadRequestException(Message.LAST_NAME_NOT_VALID);
 
 		if (request.getFirstName() == null || request.getFirstName() == "") 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.FIRSTNAME_CAN_NOT_BE_BLANK);
+			throw new BadRequestException(Message.FIRSTNAME_CAN_NOT_BE_BLANK);
 
 		if (request.getLastName() == null || request.getLastName() == "") 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.LASTNAME_CAN_NOT_BE_BLANK);
+			throw new BadRequestException(Message.LASTNAME_CAN_NOT_BE_BLANK);
 
 		if (user.isPresent()) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.EMAIL_ALREADY_EXISTS);
+			throw new BadRequestException(Message.EMAIL_ALREADY_EXISTS);
 
 		if (request.getEmailId() == null || request.getEmailId() == "") 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.EMAIL_MUST_BE_PROVIDED);
+			throw new BadRequestException(Message.EMAIL_MUST_BE_PROVIDED);
 
 		if (!matcher.matches()) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.SHOULD_BE_VALID_EMAIL);
+			throw new BadRequestException(Message.SHOULD_BE_VALID_EMAIL);
 
 		if (request.getPassword() == null || request.getPassword() == "") 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.PASSWORD_IS_REQUARD);
+			throw new BadRequestException(Message.PASSWORD_IS_REQUARD);
 
 		if (request.getPassword().length() < 6) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.PASSWORD_LENGTH_NOT_CORRECT);
+			throw new BadRequestException(Message.PASSWORD_LENGTH_NOT_CORRECT);
 
 		if (!isValidPhoneNumber(request.getMobileNumber())) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.PHONE_NO_NOT_VALID);
+			throw new BadRequestException(Message.PHONE_NO_NOT_VALID);
 
 	}
 

@@ -25,7 +25,7 @@ public class DocumentController {
     ) throws IOException {
         BaseResponse<DocumentUploadResponseDTO, Integer> response = new BaseResponse<>();
         response.setData(docUploadService.upload(fileName, file));
-        response.setMessage("Document uploaded successfully");
+        response.setSuccessMsg("Document uploaded successfully");
         return response;
     }
 
@@ -34,7 +34,7 @@ public class DocumentController {
             @RequestParam("fileName") String fileName) throws IOException {
         BaseResponse<DocumentDeleteResponseDTO, Integer> response = new BaseResponse<>();
         response.setData(docUploadService.delete(fileName));
-        response.setMessage("Document deleted successfully");
+        response.setSuccessMsg("Document deleted successfully");
         return response;
     }
 
@@ -43,7 +43,7 @@ public class DocumentController {
             @RequestParam("key") String documentKey) throws IOException {
         BaseResponse<DocumentDataResponseDTO, Integer> response = new BaseResponse<>();
         response.setData(docUploadService.fetchDoc(documentKey));
-        response.setMessage("Document signed url fetched successfully");
+        response.setSuccessMsg("Document signed url fetched successfully");
         return response;
     }
 

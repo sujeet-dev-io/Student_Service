@@ -26,12 +26,13 @@ public enum AdminType {
 		return  null;
 	}
 
-	public static String findAdminTypeByLookupId(Integer lookupId) {
+	public static AdminType findAdminTypeByLookupId(Integer lookupId) {
 		for(AdminType admin : AdminType.values()) {
 			if(admin.getLookupId().equals(lookupId)) {
-				return admin.name();
+				return admin;
 			}
 		}
 		return null;
 	}
+
 }
