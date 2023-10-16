@@ -1,11 +1,8 @@
 package com.studentapp.controller;
 
-import com.studentapp.dto.DocumentDataResponseDTO;
-import com.studentapp.dto.DocumentDeleteResponseDTO;
-import com.studentapp.dto.DocumentUploadResponseDTO;
 import com.studentapp.response.BaseResponse;
 import com.studentapp.service.impl.DocumentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,38 +10,41 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/document")
+@AllArgsConstructor
 public class DocumentController {
 
-    @Autowired
-    private DocumentService docUploadService;
+    private final DocumentService docUploadService;
 
     @PutMapping("/upload")
-    public BaseResponse<DocumentUploadResponseDTO, Integer> uploadToS3(
+    public BaseResponse<Object> uploadToS3(
             @RequestParam("fileName") String fileName,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        BaseResponse<DocumentUploadResponseDTO, Integer> response = new BaseResponse<>();
-        response.setData(docUploadService.upload(fileName, file));
-        response.setSuccessMsg("Document uploaded successfully");
-        return response;
+
+        return BaseResponse.builder()
+                .successMsg("Document Uploaded")
+                .data(docUploadService.upload(fileName, file))
+                .build();
     }
 
     @DeleteMapping
-    public BaseResponse<DocumentDeleteResponseDTO, Integer> deleteFromS3(
+    public BaseResponse<Object> deleteFromS3(
             @RequestParam("fileName") String fileName) throws IOException {
-        BaseResponse<DocumentDeleteResponseDTO, Integer> response = new BaseResponse<>();
-        response.setData(docUploadService.delete(fileName));
-        response.setSuccessMsg("Document deleted successfully");
-        return response;
+
+        return BaseResponse.builder()
+                .successMsg("Document Deleted")
+                .data(docUploadService.delete(fileName))
+                .build();
     }
 
     @GetMapping
-    public BaseResponse<DocumentDataResponseDTO, Integer> fetchFromS3(
+    public BaseResponse<Object> fetchFromS3(
             @RequestParam("key") String documentKey) throws IOException {
-        BaseResponse<DocumentDataResponseDTO, Integer> response = new BaseResponse<>();
-        response.setData(docUploadService.fetchDoc(documentKey));
-        response.setSuccessMsg("Document signed url fetched successfully");
-        return response;
+
+        return BaseResponse.builder()
+                .successMsg("Document Signed URL Fetched")
+                .data(docUploadService.fetchDoc(documentKey))
+                .build();
     }
 
 }

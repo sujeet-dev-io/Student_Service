@@ -1,44 +1,32 @@
 package com.studentapp.controller;
 
-import javax.annotation.Resource;
-
+import com.studentapp.constant.Message;
+import com.studentapp.dto.AuthenticationRequest;
 import com.studentapp.exception.BadRequestException;
+import com.studentapp.jwt.JwtUser;
+import com.studentapp.jwt.TokenProvider;
+import com.studentapp.response.BaseResponse;
 import com.studentapp.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.*;
 
-import com.studentapp.constant.Message;
-import com.studentapp.dto.AuthenticationRequest;
-import com.studentapp.enums.Status;
-import com.studentapp.jwt.JwtUser;
-import com.studentapp.jwt.TokenProvider;
-import com.studentapp.response.GenericResponse;
-import com.studentapp.service.impl.UserServiceImpl;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
 
 @Api(tags = Message.AUTHENTICATE_CONTROLLER)
 @RestController
 @RequestMapping("/api/auth")
+@AllArgsConstructor
 public class AuthenticateController {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
-
-	@Autowired
-	private TokenProvider jwtTokenUtil;
+	private final AuthenticationManager authenticationManager;
+	private final TokenProvider jwtTokenUtil;
 	
 	@Resource(name = Message.USERSERVICE)
 	private IUserService userService;
@@ -46,22 +34,20 @@ public class AuthenticateController {
 	@CrossOrigin("*")
 	@ApiOperation(value = Message.GENERATE_NEW_TOKEN)
 	@PostMapping
-	public ResponseEntity<GenericResponse> createAuthToken(
+	public ResponseEntity<BaseResponse> createAuthToken(
 			@RequestBody AuthenticationRequest authenticationRequest) {
 		try {
 			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(
-							authenticationRequest.getUsername(),
-							authenticationRequest.getPassword()
-							)
-					);
+					new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+			);
 
 			JwtUser jwtUser = userService.loadUserByUsername(authenticationRequest.getUsername());
 			final String token = jwtTokenUtil.generateToken(jwtUser);
-			GenericResponse response = new GenericResponse();
-			response.setSuccessMsg(Message.TOKEN_GENERATED);
-			response.setStatus(Status.SUCCESS);
-			response.setToken(token);
+
+			BaseResponse<Object> response = BaseResponse.builder()
+					.successMsg(Message.TOKEN_GENERATED)
+					.token(token)
+					.build();
 			return ResponseEntity.ok(response);
 
 		} catch (BadCredentialsException e) {

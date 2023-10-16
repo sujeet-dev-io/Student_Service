@@ -55,9 +55,9 @@ public class StudentPDF {
 	    private void writeTableData(PdfPTable table) {
 	        for (StudentResponse student : studentList) {
 	            table.addCell(String.valueOf(student.getStudentId()));
-	            table.addCell(student.getStudentName());
-	            table.addCell(student.getStudentAge());
-	            table.addCell(student.getStudentBranch());                      
+	            table.addCell(student.getName());
+	            table.addCell(student.getAge());
+	            table.addCell(student.getBranch());
 	        }
 	    }
 	     

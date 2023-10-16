@@ -1,51 +1,98 @@
 package com.studentapp.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.studentapp.dto.FileDeleteDto;
+import com.studentapp.enums.Status;
+import com.studentapp.exception.BadRequestException;
+import com.studentapp.helper.FileUploadHelper;
+import com.studentapp.response.BaseResponse;
+import com.studentapp.service.IFileUploadService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.studentapp.dto.FileDeleteDto;
-import com.studentapp.helper.FileUploadHelper;
-import com.studentapp.service.IFileUploadService;
+import java.io.IOException;
 
+@Slf4j
 @Service
 public class FileUploadService implements IFileUploadService {
 
-	@Autowired
-	private FileUploadHelper fileUploadHelper;
+	private final FileUploadHelper fileUploadHelper;
 
-	@Override
-	public Boolean uploadFile(MultipartFile file) {
-		Boolean isFileUploaded = false;
-		if(file.isEmpty()) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File can't ne blank");
-
-		System.out.println("File Format -> " + file.getContentType());
-		if(!file.getContentType().equals("image/jpeg") && 
-				!file.getContentType().equals("image/png"))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Format not supported, please upload jpg file");
-
-		try {
-			isFileUploaded = fileUploadHelper.uploadFile(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return isFileUploaded;
+	public FileUploadService(FileUploadHelper fileUploadHelper) {
+		this.fileUploadHelper = fileUploadHelper;
 	}
 
 	@Override
-	public Boolean deleteFile(FileDeleteDto filesDto) {
-		
-		Boolean isDeleted = false;
-
+	public BaseResponse<Object> uploadFile(MultipartFile file) {
+		validateFile(file);
+		BaseResponse<Object> response = null;
 		try {
-			isDeleted = fileUploadHelper.deleteFile(filesDto);
-		} catch(Exception e) {
-			e.printStackTrace();
+			Boolean isFileUploaded = fileUploadHelper.uploadFile(file);
+			if(isFileUploaded) {
+				// to prepare the URI
+				String data = ServletUriComponentsBuilder
+						.fromCurrentContextPath()
+						.path("/image/")
+						.path(file.getOriginalFilename())
+						.toUriString();
+
+				response = BaseResponse.builder()
+						.successMsg("File uploaded")
+						.data(data)
+						.build();
+			}
+		} catch(IOException ex) {
+			response = BaseResponse.builder()
+					.status(Status.FAILURE)
+					.error("IO Exception")
+					.errorMsg("File could not be uploaded. Something went wrong !!")
+					.build();
+
+			ex.printStackTrace();
 		}
-		return isDeleted;
+		return response;
 	}
+
+	@Override
+	public BaseResponse<Object> deleteFile(FileDeleteDto filesDto) {
+		BaseResponse<Object> response = null;
+		try {
+			Boolean isDeleted = fileUploadHelper.deleteFile(filesDto);
+			if(isDeleted) {
+				response = BaseResponse.builder()
+						.successMsg("File Deleted")
+						.data(true)
+						.build();
+			} else {
+				response = BaseResponse.builder()
+						.data(false)
+						.status(Status.FAILURE)
+						.error("NOT FOUND")
+						.errorMsg("File not found in the classpath.")
+						.build();
+			}
+		} catch(IOException ex) {
+			response = BaseResponse.builder()
+					.data(false)
+					.status(Status.FAILURE)
+					.error("IO Exception")
+					.errorMsg("File couldn't be deleted. something went wrong !!")
+					.build();
+			ex.printStackTrace();
+		}
+		return response;
+	}
+
+	private void validateFile(MultipartFile file) {
+		if(file.isEmpty())
+			throw new BadRequestException("File can't ne blank");
+
+		log.info("File Format :: " + file.getContentType());
+
+		if(!file.getContentType().equals("image/jpeg") && !file.getContentType().equals("image/png"))
+			throw new BadRequestException(
+					"Format not supported, please upload file with jpg or png format only !!");
+	}
+
 }

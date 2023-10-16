@@ -9,6 +9,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.AllArgsConstructor;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,10 +39,10 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags= Message.STUDENT_CONTROLLER)
 @RequestMapping("/api/student")
 @RestController
+@AllArgsConstructor
 public class StudentController {
-	
-	@Autowired
-	private IStudentService studentService;
+
+	private final IStudentService studentService;
 
 	@ApiOperation(value = "Ping Api")
 	@GetMapping("/ping")
@@ -50,66 +52,62 @@ public class StudentController {
 
 	@ApiOperation(value = Message.ADD_STUDENT)
 	@PostMapping("/add")
-	public ResponseEntity<BaseResponse<Boolean, Integer>> addStudent(
-			@Valid @RequestBody AddStudentRequest request) {
-		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
-		response.setData(studentService.addStudentDetails(request));
-		response.setSuccessMsg("Student details added successfully");
-		response.setStatus(Status.SUCCESS);
+	public ResponseEntity<BaseResponse<Object>> addStudent(@Valid @RequestBody AddStudentRequest request) {
+		BaseResponse<Object> response = BaseResponse.builder()
+				.successMsg("Student Added")
+				.data(studentService.addStudentDetails(request))
+				.build();
+
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = Message.GET_ALL_STUDENT)
 	@GetMapping("/getAll")
-	public ResponseEntity<BaseResponse<List<StudentResponse>, Integer>> getAllStudent(){
-		BaseResponse<List<StudentResponse>, Integer> response = new BaseResponse<>();
-		response.setData(studentService.getAllStudent());
-		response.setSuccessMsg("Student details list fetched successfully");
-		response.setStatus(Status.SUCCESS);
+	public ResponseEntity<BaseResponse<Object>> getAllStudent() throws JsonProcessingException {
+		BaseResponse<Object> response = BaseResponse.builder()
+				.successMsg("Student List Fetched")
+				.data(studentService.getAllStudent())
+				.build();
+
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = Message.GET_STUDENT)
 	@GetMapping("/get/{id}")
-	public ResponseEntity<BaseResponse<StudentResponse, Integer>> getStudent(
-			@PathVariable Integer id) {
-		BaseResponse<StudentResponse, Integer> response = new BaseResponse<>();
-		response.setData(studentService.getStudentById(id));
-		response.setSuccessMsg("Student details fetched successfully");
-		response.setStatus(Status.SUCCESS);
+	public ResponseEntity<BaseResponse<Object>> getStudent(@PathVariable Integer id) {
+		BaseResponse<Object> response = BaseResponse.builder()
+				.successMsg("Student Fetched")
+				.data(studentService.getStudentById(id))
+				.build();
+
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = Message.UPDATE_STUDENT)
 	@PutMapping("/update/{id}")
-	public ResponseEntity<BaseResponse<Boolean, Integer>> updateDetails(
-			@PathVariable Integer id,
-			@Valid @RequestBody AddStudentRequest request) {
-		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
-		response.setData(studentService.updateDetails(id, request));
-		response.setSuccessMsg("Student Details updated successfully");
-		response.setStatus(Status.SUCCESS);
+	public ResponseEntity<BaseResponse<Object>> updateDetails(@PathVariable Integer id, @Valid @RequestBody AddStudentRequest request) {
+		BaseResponse<Object> response = BaseResponse.builder()
+				.successMsg("Student Updated")
+				.data(studentService.updateDetails(id, request))
+				.build();
+
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = Message.DELETE_STUDENT)
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<BaseResponse<Boolean, Integer>> deleteDetails(
-			@PathVariable Integer id) {
-		BaseResponse<Boolean, Integer> response = new BaseResponse<>();
-		response.setData(studentService.deleteDetails(id));
-		response.setSuccessMsg("Student Details deleted successfully");
-		response.setStatus(Status.SUCCESS);
+	public ResponseEntity<BaseResponse<Object>> deleteDetails(@PathVariable Integer id) {
+		BaseResponse<Object> response = BaseResponse.builder()
+				.successMsg("Student Deleted")
+				.data(studentService.deleteDetails(id))
+				.build();
+
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value = Message.GET_ALL_STUDENT_PDF)
 	@GetMapping("/getAll/pdf")
-	public void exportToPDF(
-			HttpServletResponse response
-			) throws DocumentException,
-	IOException,
-	com.itextpdf.text.DocumentException {
+	public void exportToPDF(HttpServletResponse response) throws DocumentException, IOException, com.itextpdf.text.DocumentException {
 		response.setContentType("student/pdf");
 		DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());

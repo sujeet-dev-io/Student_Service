@@ -1,19 +1,21 @@
 package com.studentapp.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.studentapp.enums.Status;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-
-/**
- * Instantiates a new base response.
- */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class BaseResponse<T, ID> extends GenericResponse{
-	
-	/** The data. */
+@Builder
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
+public class BaseResponse<T>{
+	String successMsg;
+
+	@Builder.Default
+	Status status = Status.SUCCESS;
+
 	T data;
-	
-	/** The id. */
-	ID id;
+	String error;
+	String errorMsg;
+	String token;
 }

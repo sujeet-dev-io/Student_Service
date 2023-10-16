@@ -1,7 +1,5 @@
 package com.studentapp.jwt;
 
-import javax.annotation.Resource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.annotation.Resource;
 
 
 @Configuration
@@ -44,9 +44,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().
-                authorizeRequests()
-                .antMatchers("/api/auth",
+        http
+                .cors()
+                .and()
+                .csrf()
+                .disable()
+                .authorizeRequests()
+//                .antMatchers("/api/private/**")
+//                .hasAuthority(AdminType.SUPER_ADMIN.name())
+                .antMatchers(
+                        "/api/auth",
                 		"/api/ping",
                 		"/api/addUser",
                 		"/api/student/add",
@@ -59,13 +66,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         				"/configuration/security",
         				"/swagger-ui.html",
                         "/actuator/health",
-        				"/webjars/**").permitAll()
-                .anyRequest().authenticated()
+        				"/webjars/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+//                .and()
+//                .exceptionHandling()
+//                .accessDeniedHandler(accessDeniedHandler())
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         
         http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
     }
+
+//    @Bean
+//    public CustomAccessDeniedHandler accessDeniedHandler() {
+//        return new CustomAccessDeniedHandler();
+//    }
 
     @Bean
     public BCryptPasswordEncoder encoder(){

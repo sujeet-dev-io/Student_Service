@@ -10,19 +10,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.studentapp.response.BaseResponse;
 import com.studentapp.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studentapp.enums.Status;
-import com.studentapp.response.GenericResponse;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -74,8 +73,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (excludedUrls.stream().noneMatch(url-> 
 				req.getRequestURL().toString().toLowerCase().contains(url.toLowerCase()))
 				&& !req.getMethod().equals("OPTIONS")) {
-			System.out.println("RequestURL : " + req.getRequestURL().toString().toLowerCase());
-			System.out.println("Method Type : " + req.getMethod().toString());
+//			System.out.println("RequestURL : " + req.getRequestURL().toString().toLowerCase());
+//			System.out.println("Method Type : " + req.getMethod().toString());
 			String authToken = req.getHeader(this.tokenHeader);
 
 			if(null == authToken) {
@@ -92,7 +91,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				} else {
 					authToken = authToken.substring(7);
 				    username = jwtTokenUtil.getUsernameFromToken(authToken);
-				    System.out.println("username : "+username);
 				}
 			} catch (MalformedJwtException e) {
 				logger.info("The given token is malformed. Please try with a valid token");
@@ -150,9 +148,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			) throws IOException {
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		GenericResponse body = new GenericResponse();
-		body.setStatus(Status.FAILURE);
-		body.setError(errorMessage);
+		BaseResponse<Object> body = BaseResponse.builder()
+				.status(Status.FAILURE)
+				.errorMsg(errorMessage)
+				.build();
+
 		response.getOutputStream().println(objectMapper.writeValueAsString(body));
 	}
 }

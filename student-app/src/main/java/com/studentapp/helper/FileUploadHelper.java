@@ -1,49 +1,45 @@
 package com.studentapp.helper;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-
+import com.studentapp.dto.FileDeleteDto;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.studentapp.constant.Message;
-import com.studentapp.dto.FileDeleteDto;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Component
 public class FileUploadHelper {
 	
 	protected final Log logger = LogFactory.getLog(FileUploadHelper.class);
 
-	// To upload the file in your local location
-	
-//    public final String UPLOAD_DIR = "D:\\client\\std\\development\\student-app\\student-app\\src\\main\\resources\\static\\image";
-    
-	// To upload the file in your global location
-	
-	 String UPLOAD_DIR = new ClassPathResource("").getFile().getAbsolutePath();
+	/**
+	 * To upload the file in your local directory
+	 * public final String UPLOAD_DIR = "D:\\client\\std\\development\\student-app\\student-app\\src\\main\\resources\\static\\image";
+	 */
 
-    public FileUploadHelper() throws IOException {
+	/**
+	 * To upload the file in your global location
+	 * String UPLOAD_DIR = new ClassPathResource("").getFile().getAbsolutePath();
+	 */
 
-    }
-    
-    public Boolean uploadFile(MultipartFile file) throws IOException {
+	public Boolean uploadFile(MultipartFile file) throws IOException {
         Boolean isUploaded = false;
-        
-        logger.info("ClassPath ->" + new ClassPathResource("").getFile().getAbsolutePath());
+		String UPLOAD_DIR = new ClassPathResource("").getFile().getAbsolutePath();
+        logger.info("ClassPath :: " + UPLOAD_DIR);
         try{
             Files.copy(
                     file.getInputStream(),
                     Paths.get(UPLOAD_DIR+ File.separator + file.getOriginalFilename()),
-                    StandardCopyOption.REPLACE_EXISTING);
+                    StandardCopyOption.REPLACE_EXISTING
+			);
             isUploaded = true;
         } catch(Exception e) {
             e.printStackTrace();
@@ -52,24 +48,16 @@ public class FileUploadHelper {
     }
     
     public Boolean deleteFile(FileDeleteDto filesDto) throws IOException {
-
-    	Boolean isUploaded = false; 
+		String UPLOAD_DIR = new ClassPathResource("").getFile().getAbsolutePath();
+    	Boolean isDeleted = false;
     	List<String> listOfFilesNamesToDelete = filesDto.getListOfFileNames();
 
     	for(String fileName : listOfFilesNamesToDelete) {
-    		
+			logger.info("fileName :: " + fileName);
     		Path path = java.nio.file.Paths.get(UPLOAD_DIR + File.separator + fileName);
-    		try {
-    			Files.deleteIfExists(path);
-    			isUploaded = true;
-    		} catch(NoSuchFileException ex) {
-    			logger.info(Message.FILE_NOT_FOUND);
-    			return false;
-    		}
-    		catch(Exception e) {
-    			e.printStackTrace();
-    		}
+			logger.info("Path :: " + path);
+			isDeleted = Files.deleteIfExists(path);
     	}
-    	return isUploaded;
+    	return isDeleted;
     }
 }

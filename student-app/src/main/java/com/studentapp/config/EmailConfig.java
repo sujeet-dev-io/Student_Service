@@ -11,7 +11,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Configuration
 public class EmailConfig {
 
-	// fetch the host, port, username, password and other details from application.properties
+	// fetching the Email host, port, username, password and other details from application.yml
 
 	@Value("${spring.mail.username}")
 	private String emailUserName;

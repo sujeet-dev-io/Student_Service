@@ -1,11 +1,10 @@
 package com.studentapp.service;
 
+import com.studentapp.dto.FileDeleteDto;
+import com.studentapp.response.BaseResponse;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.studentapp.dto.FileDeleteDto;
-
 public interface IFileUploadService {
-    Boolean uploadFile(MultipartFile file);
-
-	Boolean deleteFile(FileDeleteDto request);
+    BaseResponse<Object> uploadFile(MultipartFile file);
+    BaseResponse<Object> deleteFile(FileDeleteDto request);
 }

@@ -1,19 +1,19 @@
 package com.studentapp.service.impl;
 
+import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studentapp.exception.BadRequestException;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.studentapp.dao.StudentDao;
 import com.studentapp.dto.AddStudentRequest;
@@ -24,24 +24,28 @@ import com.studentapp.service.IStudentService;
 import javax.validation.constraints.NotNull;
 
 @Service
+@Slf4j
 public class StudentService implements IStudentService {
 
 	@Autowired
 	private StudentDao studentDao;
 
 	@Autowired
-	private ModelMapper mapper;
+	private ModelMapper modelMapper;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	public StudentService() {
 	}
 
 	@Override
 	public Boolean addStudentDetails(AddStudentRequest request) {
+		log.info("Request received to add student details, req :: {}", request);
 		Optional<StudentEntity> studentOpt = studentDao.findByMobileNumber(request.getMobileNumber());
 		if(studentOpt.isPresent())
 	     throw new BadRequestException("Student Already exist with this mobile no.");
 
-		StudentEntity entity = mapper.map(request, StudentEntity.class);
+		StudentEntity entity = modelMapper.map(request, StudentEntity.class);
 		entity.setCreatedAt(getCurrentTimestamp());
 		entity.setCreatedBy(request.getEmail());
 		StudentEntity savedEntity = studentDao.save(entity);
@@ -56,7 +60,7 @@ public class StudentService implements IStudentService {
 		List<StudentEntity> listOfStudent = studentDao.findAll();
 		if(!CollectionUtils.isEmpty(listOfStudent)) {
 			listOfStudent.forEach(std -> {
-				StudentResponse response = mapper.map(std, StudentResponse.class);
+				StudentResponse response = modelMapper.map(std, StudentResponse.class);
 				responseList.add(response);
 			});
 		}
@@ -66,22 +70,24 @@ public class StudentService implements IStudentService {
 
 	@Override
 	public StudentResponse getStudentById(Integer id) {
+		log.info("Request received to fetch student for ID :: {}", id);
 		StudentResponse response = null;
 		Optional<StudentEntity> entityOptional = studentDao.findById(id);
 		if(!entityOptional.isPresent()) {
 			throw new BadRequestException("Student not found with the given Id");
 		}
 		StudentEntity entity = entityOptional.get();
-		return mapper.map(entity, StudentResponse.class);
+		return modelMapper.map(entity, StudentResponse.class);
 	}
 
 	@Override
-	public Boolean updateDetails(Integer id, AddStudentRequest dto) {
+	public Boolean updateDetails(Integer id, AddStudentRequest updateRequest) {
+		log.info("Request received to update student for ID :: {} and updateReq :: {}", id, updateRequest);
 		Optional<StudentEntity> entityOptional = studentDao.findById(id);
 		if(!entityOptional.isPresent()) 
 			throw new BadRequestException("Record doesn't exist to update");
 		StudentEntity entity = entityOptional.get();
-		entity = mapper.map(dto, StudentEntity.class);
+		entity = modelMapper.map(updateRequest, StudentEntity.class);
 		entity.setStudentId(id);
 		studentDao.save(entity);
 		return true;
@@ -89,6 +95,7 @@ public class StudentService implements IStudentService {
 
 	@Override
 	public Boolean deleteDetails(Integer id) {
+		log.info("Request received to delete student for ID :: {}", id);
 		Optional<StudentEntity> entityOptional = studentDao.findById(id);
 		if(!entityOptional.isPresent()) 
 			throw new BadRequestException("Record doesn't exist to delete");
